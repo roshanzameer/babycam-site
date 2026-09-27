@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BabyCam — a free, private baby monitor from two Android phones</title>
+  <meta name="description" content="Turn a spare Android phone into a baby monitor. Live video and sound, talk back, night light and motion alerts. Free, no account, and your video never touches the cloud.">
+  <meta property="og:title" content="BabyCam — a free, private baby monitor">
+  <meta property="og:description" content="Turn a spare Android phone into a baby monitor. Free, no account, no cloud.">
+  <meta property="og:image" content="https://roshanzameer.github.io/babycam-site/assets/og.png">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/icon-180.png">
+  <style>
+    :root {
+      --ink: #4D406E;
+      --ink-deep: #31217A;
+      --paper: #F7F3EC;
+      --night: #131018;
+      --night-2: #1C1824;
+      --night-3: #2C2636;
+      --lilac: #B9A6FF;
+      --lilac-soft: #E7DEFF;
+      --peach: #FFB4A0;
+      --mint: #93D9B9;
+      --muted: #CBC0DA;
+      --radius: 22px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: ui-rounded, "SF Pro Rounded", "Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+      color: var(--lilac-soft);
+      background: var(--night);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--lilac); }
+    img { max-width: 100%; display: block; }
+    .wrap { width: min(1120px, 100% - 40px); margin-inline: auto; }
+
+    /* Nav */
+    nav { position: sticky; top: 0; z-index: 10; backdrop-filter: blur(12px); background: rgb(19 16 24 / 0.72); border-bottom: 1px solid rgb(255 255 255 / 0.06); }
+    nav .wrap { display: flex; align-items: center; justify-content: space-between; height: 64px; }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.2rem; color: var(--paper); text-decoration: none; }
+    .brand img { width: 34px; height: 34px; }
+    nav ul { display: flex; gap: 26px; list-style: none; margin: 0; padding: 0; }
+    nav ul a { color: var(--muted); text-decoration: none; font-weight: 600; }
+    nav ul a:hover { color: var(--paper); }
+    @media (max-width: 720px) { nav ul { display: none; } }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 26px; border-radius: 999px; font-weight: 800; font-size: 1.05rem; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease; }
+    .btn:hover { transform: translateY(-2px); }
+    .btn-primary { background: var(--lilac); color: var(--ink-deep); box-shadow: 0 10px 30px rgb(185 166 255 / 0.3); }
+    .btn-ghost { color: var(--paper); border: 1.5px solid rgb(255 255 255 / 0.18); }
+    .btn svg { width: 20px; height: 20px; }
+    .btn-small { padding: 9px 18px; font-size: .95rem; }
+
+    /* Hero */
+    .hero { position: relative; overflow: hidden; padding: 90px 0 110px; background:
+      radial-gradient(1200px 500px at 80% -10%, rgb(73 59 147 / 0.55), transparent 60%),
+      radial-gradient(800px 400px at -10% 110%, rgb(122 46 20 / 0.25), transparent 60%),
+      var(--night); }
+    .hero .wrap { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 50px; align-items: center; }
+    @media (max-width: 900px) { .hero .wrap { grid-template-columns: 1fr; text-align: center; } .hero .cta { justify-content: center; } .hero .phones { margin-top: 20px; } }
+    .eyebrow { display: inline-block; padding: 6px 14px; border-radius: 999px; background: rgb(185 166 255 / 0.12); color: var(--lilac); font-weight: 700; font-size: .9rem; margin-bottom: 18px; }
+    h1 { font-size: clamp(2.4rem, 5.2vw, 3.9rem); line-height: 1.08; margin: 0 0 20px; color: var(--paper); letter-spacing: -0.02em; }
+    h1 em { font-style: normal; background: linear-gradient(90deg, var(--lilac), var(--peach)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lead { font-size: 1.2rem; color: var(--muted); max-width: 540px; margin: 0 0 32px; }
+    @media (max-width: 900px) { .lead { margin-inline: auto; } }
+    .cta { display: flex; gap: 14px; flex-wrap: wrap; }
+    .fine { margin-top: 18px; font-size: .92rem; color: #948F9E; }
+    .stars span { position: absolute; color: var(--lilac-soft); opacity: .5; animation: twinkle 4s ease-in-out infinite; font-size: 14px; }
+    @keyframes twinkle { 50% { opacity: .1; } }
+
+    /* Phone mockups */
+    .phones { position: relative; height: 520px; }
+    .phone { position: absolute; width: 230px; height: 470px; border-radius: 36px; background: #0b0910; border: 8px solid #2a2433; box-shadow: 0 40px 80px rgb(0 0 0 / 0.5); overflow: hidden; }
+    .phone .screen { position: absolute; inset: 0; display: flex; flex-direction: column; }
+    .phone.parent { right: 10%; top: 0; transform: rotate(4deg); }
+    .phone.baby { left: 6%; top: 50px; transform: rotate(-6deg); width: 210px; height: 430px; }
+    @media (max-width: 900px) { .phone.parent { right: calc(50% - 250px); } .phone.baby { left: calc(50% - 230px); } }
+    @media (max-width: 520px) { .phones { height: 470px; } .phone.parent { right: 4%; } .phone.baby { left: 4%; } }
+    .feed { position: relative; flex: 1; background: radial-gradient(circle at 50% 40%, #3b3550, #15121c 75%); display: grid; place-items: center; }
+    .feed img { width: 62%; opacity: .92; filter: drop-shadow(0 0 22px rgb(185 166 255 / 0.35)); }
+    .pill { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgb(0 0 0 / .55); color: var(--mint); font-size: 11px; font-weight: 800; padding: 5px 12px; border-radius: 999px; white-space: nowrap; display: flex; gap: 6px; align-items: center; }
+    .pill i { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); display: inline-block; animation: pulse 1.6s infinite; }
+    @keyframes pulse { 50% { opacity: .3; } }
+    .battery { position: absolute; top: 44px; right: 14px; font-size: 10px; font-weight: 700; color: var(--muted); }
+    .motion { position: absolute; bottom: 14px; left: 12px; right: 12px; background: rgb(255 180 160 / .95); color: #5C1900; font-weight: 800; font-size: 11px; padding: 8px 10px; border-radius: 12px; text-align: center; animation: pop 6s ease-in-out infinite; }
+    @keyframes pop { 0%, 55%, 100% { opacity: 0; transform: translateY(8px); } 62%, 90% { opacity: 1; transform: none; } }
+    .controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; padding: 14px 12px 18px; background: var(--night-2); }
+    .controls span { aspect-ratio: 1; border-radius: 50%; background: var(--night-3); display: grid; place-items: center; }
+    .controls span.on { background: var(--lilac); }
+    .controls svg { width: 18px; height: 18px; fill: var(--lilac-soft); }
+    .controls span.on svg { fill: var(--ink-deep); }
+    .baby-screen { flex: 1; background: var(--night-2); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 20px; text-align: center; }
+    .baby-screen .qr { width: 120px; height: 120px; border-radius: 14px; background: var(--paper); padding: 10px; }
+    .baby-screen .qr svg { width: 100%; height: 100%; }
+    .baby-screen b { color: var(--paper); font-size: 15px; }
+    .baby-screen small { color: var(--muted); font-size: 11px; }
+    .pin { letter-spacing: .3em; font-weight: 800; color: var(--lilac); font-size: 20px; background: var(--night-3); padding: 6px 14px; border-radius: 12px; }
+
+    /* Sections */
+    section { padding: 100px 0; }
+    .section-head { text-align: center; max-width: 640px; margin: 0 auto 56px; }
+    h2 { font-size: clamp(1.9rem, 3.6vw, 2.6rem); line-height: 1.15; margin: 0 0 14px; color: var(--paper); letter-spacing: -0.01em; }
+    .section-head p { color: var(--muted); font-size: 1.1rem; margin: 0; }
+
+    /* Features */
+    .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 900px) { .features { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 580px) { .features { grid-template-columns: 1fr; } }
+    .card { background: var(--night-2); border: 1px solid rgb(255 255 255 / 0.06); border-radius: var(--radius); padding: 28px; transition: transform .2s ease, border-color .2s ease; }
+    .card:hover { transform: translateY(-4px); border-color: rgb(185 166 255 / 0.35); }
+    .card .icon { width: 48px; height: 48px; border-radius: 14px; display: grid; place-items: center; margin-bottom: 16px; }
+    .card .icon svg { width: 26px; height: 26px; }
+    .card h3 { margin: 0 0 6px; font-size: 1.15rem; color: var(--paper); }
+    .card p { margin: 0; color: var(--muted); font-size: .98rem; }
+    .i-lilac { background: rgb(185 166 255 / 0.14); } .i-lilac svg { fill: var(--lilac); }
+    .i-peach { background: rgb(255 180 160 / 0.14); } .i-peach svg { fill: var(--peach); }
+    .i-mint { background: rgb(147 217 185 / 0.14); } .i-mint svg { fill: var(--mint); }
+
+    /* Connect */
+    .connect { background: linear-gradient(180deg, var(--night), #17122a 50%, var(--night)); }
+    .ways { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    @media (max-width: 900px) { .ways { grid-template-columns: 1fr; } }
+    .way { position: relative; background: var(--night-2); border-radius: var(--radius); padding: 30px; border: 1px solid rgb(255 255 255 / 0.06); }
+    .way .tag { position: absolute; top: 22px; right: 22px; font-size: .78rem; font-weight: 800; padding: 4px 10px; border-radius: 999px; background: rgb(147 217 185 / .14); color: var(--mint); }
+    .way .tag.soon { background: rgb(255 180 160 / .14); color: var(--peach); }
+    .way h3 { margin: 12px 0 8px; color: var(--paper); font-size: 1.25rem; }
+    .way p { margin: 0; color: var(--muted); }
+    .way svg.big { width: 40px; height: 40px; fill: var(--lilac); }
+
+    /* Steps */
+    .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; counter-reset: step; }
+    @media (max-width: 900px) { .steps { grid-template-columns: 1fr; } }
+    .step { text-align: center; padding: 10px 16px; }
+    .step::before { counter-increment: step; content: counter(step); display: grid; place-items: center; width: 56px; height: 56px; margin: 0 auto 18px; border-radius: 50%; background: var(--lilac); color: var(--ink-deep); font-weight: 800; font-size: 1.4rem; box-shadow: 0 0 0 8px rgb(185 166 255 / .12); }
+    .step h3 { margin: 0 0 8px; color: var(--paper); }
+    .step p { margin: 0; color: var(--muted); }
+
+    /* Privacy band */
+    .privacy { background: var(--paper); color: var(--ink); }
+    .privacy .wrap { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 60px; align-items: center; }
+    @media (max-width: 900px) { .privacy .wrap { grid-template-columns: 1fr; text-align: center; } .privacy img { margin: 0 auto; } }
+    .privacy img { width: min(340px, 80%); }
+    .privacy h2 { color: var(--ink-deep); }
+    .privacy p { color: #5b4f7c; font-size: 1.1rem; }
+    .checks { list-style: none; padding: 0; margin: 24px 0 0; display: grid; gap: 12px; }
+    .checks li { display: flex; gap: 12px; align-items: flex-start; font-weight: 700; color: var(--ink); text-align: left; }
+    @media (max-width: 900px) { .checks { justify-items: center; } }
+    .checks svg { flex: none; width: 24px; height: 24px; fill: #2f8f63; margin-top: 2px; }
+
+    /* FAQ */
+    .faq { max-width: 780px; margin: 0 auto; display: grid; gap: 12px; }
+    details { background: var(--night-2); border-radius: 16px; padding: 18px 22px; border: 1px solid rgb(255 255 255 / 0.06); }
+    summary { cursor: pointer; font-weight: 700; color: var(--paper); font-size: 1.05rem; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--lilac); font-size: 1.4rem; line-height: 1; transition: transform .2s; }
+    details[open] summary::after { transform: rotate(45deg); }
+    details p, details ol { color: var(--muted); margin: 12px 0 0; }
+
+    /* Download */
+    .download { text-align: center; background:
+      radial-gradient(700px 300px at 50% 0%, rgb(73 59 147 / 0.55), transparent 70%), var(--night); }
+    .download img { width: 110px; margin: 0 auto 24px; }
+    .download .cta { justify-content: center; }
+
+    footer { padding: 36px 0; border-top: 1px solid rgb(255 255 255 / 0.06); color: #948F9E; font-size: .92rem; }
+    footer .wrap { display: flex; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
+  </style>
+</head>
+<body>
+
+  <!-- Icons used throughout -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><path d="M17 10.5V7a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-3.5l4 4v-11l-4 4z"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M12.3 2a10 10 0 1 0 9.7 12.3A8 8 0 0 1 12.3 2z"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 21h6v-1H9v1zm3-19a7 7 0 0 0-4 12.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26A7 7 0 0 0 12 2z"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M12 22a2 2 0 0 0 2-2h-4a2 2 0 0 0 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4a1.5 1.5 0 0 0-3 0v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></symbol>
+    <symbol id="i-flip" viewBox="0 0 24 24"><path d="M20 5h-3.17L15 3H9L7.17 5H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm-5 11.5V14H9v2.5L5.5 13 9 9.5V12h6V9.5l3.5 3.5-3.5 3.5z"/></symbol>
+    <symbol id="i-screen" viewBox="0 0 24 24"><path d="M17 1H7a2 2 0 0 0-2 2v18a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2zm0 18H7V5h10v14z"/></symbol>
+    <symbol id="i-battery" viewBox="0 0 24 24"><path d="M15.67 4H14V2h-4v2H8.33A1.33 1.33 0 0 0 7 5.33v15.34A1.33 1.33 0 0 0 8.33 22h7.34A1.33 1.33 0 0 0 17 20.67V5.33A1.33 1.33 0 0 0 15.67 4z"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M1 9l2 2a12.73 12.73 0 0 1 18 0l2-2A15.57 15.57 0 0 0 1 9zm8 8l3 3 3-3a4.24 4.24 0 0 0-6 0zm-4-4l2 2a7.07 7.07 0 0 1 10 0l2-2a9.9 9.9 0 0 0-14 0z"/></symbol>
+    <symbol id="i-direct" viewBox="0 0 24 24"><path d="M7 2h2v6H7zM15 2h2v6h-2zM4 9h16v3a8 8 0 0 1-7 7.93V22h-2v-2.07A8 8 0 0 1 4 12V9z"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm6.93 6h-2.95a15.65 15.65 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04A14.1 14.1 0 0 1 13.91 8h-3.82A14.1 14.1 0 0 1 12 4.04zM4.26 14a7.8 7.8 0 0 1 0-4h3.38a16.5 16.5 0 0 0 0 4zm.81 2h2.95a15.65 15.65 0 0 0 1.38 3.56A7.99 7.99 0 0 1 5.07 16zM8.02 8H5.07a7.99 7.99 0 0 1 4.33-3.56A15.65 15.65 0 0 0 8.02 8zM12 19.96A14.1 14.1 0 0 1 10.09 16h3.82A14.1 14.1 0 0 1 12 19.96zM14.34 14H9.66a14.7 14.7 0 0 1 0-4h4.68a14.7 14.7 0 0 1 0 4zm.25 5.56A15.65 15.65 0 0 0 15.97 16h2.95a8.03 8.03 0 0 1-4.33 3.56zM16.36 14a16.5 16.5 0 0 0 0-4h3.38a7.8 7.8 0 0 1 0 4z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></symbol>
+    <symbol id="i-github" viewBox="0 0 24 24"><path d="M12 .5a12 12 0 0 0-3.79 23.39c.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61a3.18 3.18 0 0 0-1.33-1.76c-1.09-.74.08-.73.08-.73a2.52 2.52 0 0 1 1.84 1.24 2.56 2.56 0 0 0 3.5 1 2.56 2.56 0 0 1 .76-1.6c-2.67-.3-5.47-1.33-5.47-5.93a4.64 4.64 0 0 1 1.24-3.22 4.3 4.3 0 0 1 .12-3.18s1-.32 3.3 1.23a11.4 11.4 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23a4.3 4.3 0 0 1 .12 3.18 4.64 4.64 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92a2.87 2.87 0 0 1 .82 2.22v3.29c0 .32.21.7.82.58A12 12 0 0 0 12 .5z"/></symbol>
+  </svg>
+
+  <nav>
+    <div class="wrap">
+      <a class="brand" href="#"><img src="assets/icon-180.png" alt="">BabyCam</a>
+      <ul>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#connect">How it connects</a></li>
+        <li><a href="#privacy">Privacy</a></li>
+        <li><a href="#faq">FAQ</a></li>
+      </ul>
+      <a class="btn btn-primary btn-small" href="#download">Get it free</a>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="stars" aria-hidden="true">
+      <span style="top:12%;left:8%">✦</span><span style="top:22%;left:46%;animation-delay:1s">★</span>
+      <span style="top:70%;left:4%;animation-delay:2s">✦</span><span style="top:8%;left:70%;animation-delay:.5s">★</span>
+      <span style="top:82%;left:52%;animation-delay:1.5s">✦</span><span style="top:40%;left:94%;animation-delay:2.5s">★</span>
+    </div>
+    <div class="wrap">
+      <div>
+        <span class="eyebrow">Free Android baby monitor</span>
+        <h1>That old phone in the drawer is now a <em>baby monitor.</em></h1>
+        <p class="lead">Put one phone by the crib and watch from another. Live video and sound, talk back, a soft night light and motion alerts. No account, no subscription, and your video never touches the cloud.</p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#download"><svg><use href="#i-download"/></svg>Download for Android</a>
+          <a class="btn btn-ghost" href="#how">See how it works</a>
+        </div>
+        <p class="fine">Free forever · Android 8.0 and newer · One app for both phones</p>
+      </div>
+
+      <div class="phones" aria-hidden="true">
+        <div class="phone baby">
+          <div class="screen">
+            <div class="baby-screen">
+              <b>Baby Cam</b>
+              <div class="qr">
+                <svg viewBox="0 0 21 21" shape-rendering="crispEdges"><path fill="#31217A" d="M0 0h7v7H0zM14 0h7v7h-7zM0 14h7v7H0z"/><path fill="#F7F3EC" d="M1 1h5v5H1zM15 1h5v5h-5zM1 15h5v5H1z"/><path fill="#31217A" d="M2 2h3v3H2zM16 2h3v3h-3zM2 16h3v3H2zM8 0h1v2H8zM10 1h2v1h-2zM8 3h3v1H8zM12 3h1v3h-1zM9 5h2v2H9zM8 8h2v1H8zM11 8h3v1h-3zM0 8h2v1H0zM3 8h3v2H3zM15 8h2v2h-2zM18 8h3v1h-3zM1 10h2v2H1zM6 10h3v1H6zM10 10h1v3h-1zM12 10h2v2h-2zM17 11h3v2h-3zM4 12h2v1H4zM8 12h1v2H8zM14 13h2v1h-2zM19 14h2v2h-2zM8 15h3v1H8zM12 15h2v2h-2zM16 15h2v2h-2zM9 17h1v2H9zM11 18h3v1h-3zM15 18h1v3h-1zM17 18h2v1h-2zM8 20h2v1H8zM19 19h2v2h-2z"/></svg>
+              </div>
+              <small>Scan with the parent phone</small>
+              <span class="pin">4 8 2 7</span>
+              <small>or enter this PIN on home Wi-Fi</small>
+            </div>
+          </div>
+        </div>
+        <div class="phone parent">
+          <div class="screen">
+            <div class="feed">
+              <span class="pill"><i></i>Connected</span>
+              <span class="battery">Baby phone 84%</span>
+              <img src="assets/logo-light.png" alt="">
+              <span class="motion">Motion detected in the nursery</span>
+            </div>
+            <div class="controls">
+              <span class="on"><svg><use href="#i-mic"/></svg></span>
+              <span><svg><use href="#i-flip"/></svg></span>
+              <span><svg><use href="#i-bulb"/></svg></span>
+              <span><svg><use href="#i-screen"/></svg></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Everything you'd want from a monitor</h2>
+        <p>Without buying a monitor. Both phones run the same app; you just pick which one is the baby and which one is the parent.</p>
+      </div>
+      <div class="features">
+        <div class="card"><div class="icon i-lilac"><svg><use href="#i-video"/></svg></div><h3>Live HD video and sound</h3><p>Smooth, sharp video with audio, straight from the nursery to your phone or tablet.</p></div>
+        <div class="card"><div class="icon i-peach"><svg><use href="#i-mic"/></svg></div><h3>Talk back</h3><p>Hold to talk and soothe your little one through the baby phone's speaker, with adjustable volume.</p></div>
+        <div class="card"><div class="icon i-mint"><svg><use href="#i-bell"/></svg></div><h3>Motion alerts</h3><p>A gentle, distinct chime lets you know when there's movement in the crib.</p></div>
+        <div class="card"><div class="icon i-peach"><svg><use href="#i-bulb"/></svg></div><h3>Night light</h3><p>Turn the baby phone into a soft light with adjustable brightness, right from the parent phone.</p></div>
+        <div class="card"><div class="icon i-lilac"><svg><use href="#i-moon"/></svg></div><h3>Screen off, still watching</h3><p>Black out the baby phone's screen so it doesn't light up the room. Monitoring carries on.</p></div>
+        <div class="card"><div class="icon i-mint"><svg><use href="#i-flip"/></svg></div><h3>Remote camera control</h3><p>Switch between front and back cameras and turn on the flashlight from the parent phone.</p></div>
+        <div class="card"><div class="icon i-lilac"><svg><use href="#i-battery"/></svg></div><h3>Battery and low-light info</h3><p>See the baby phone's battery level, and get a heads-up when the room is too dark to see.</p></div>
+        <div class="card"><div class="icon i-peach"><svg><use href="#i-screen"/></svg></div><h3>Phones, foldables and tablets</h3><p>Portrait or landscape, with controls that tuck away so the video gets the whole screen.</p></div>
+        <div class="card"><div class="icon i-mint"><svg><use href="#i-wifi"/></svg></div><h3>Reconnects on its own</h3><p>If Wi-Fi hiccups or a phone restarts, BabyCam finds its way back without you lifting a finger.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="connect" class="connect">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Works at home, and wherever you travel</h2>
+        <p>Pick whichever suits the moment. The parent phone remembers the baby phone, so you only pair once.</p>
+      </div>
+      <div class="ways">
+        <div class="way"><span class="tag">Ready</span><svg class="big"><use href="#i-wifi"/></svg><h3>Home Wi-Fi</h3><p>Both phones on the same Wi-Fi? The parent phone finds the baby phone automatically. Just type its 4-digit PIN.</p></div>
+        <div class="way"><span class="tag">Ready</span><svg class="big"><use href="#i-direct"/></svg><h3>Wi-Fi Direct</h3><p>No router needed, great for hotels, grandparents' houses and camping. Scan a QR code and the phones connect directly to each other.</p></div>
+        <div class="way"><span class="tag soon">Coming soon</span><svg class="big"><use href="#i-globe"/></svg><h3>Over the internet</h3><p>Check in from the garden, the office or anywhere else, with a private code only your phones know.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Up and running in two minutes</h2>
+        <p>No sign-up, no cables, no hub.</p>
+      </div>
+      <div class="steps">
+        <div class="step"><h3>Install on both phones</h3><p>Download the same app on the phone that stays with your baby and on the one you keep with you.</p></div>
+        <div class="step"><h3>Pick a role on each</h3><p>Choose <b>Baby</b> on the phone by the crib and <b>Parent</b> on yours.</p></div>
+        <div class="step"><h3>Pair and relax</h3><p>Enter the PIN or scan the QR code. You're watching live, and it reconnects on its own from then on.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="privacy" class="privacy">
+    <div class="wrap">
+      <img src="assets/logo.png" alt="BabyCam logo: a baby sleeping inside a crescent moon, with stars">
+      <div>
+        <h2>Your nursery stays yours</h2>
+        <p>Many camera apps send your video through their servers. BabyCam doesn't. Video and sound travel directly from one phone to the other, encrypted end to end, and nothing is ever recorded.</p>
+        <ul class="checks">
+          <li><svg><use href="#i-check"/></svg>No account, no email, no sign-in</li>
+          <li><svg><use href="#i-check"/></svg>Video goes phone to phone and is never stored or recorded</li>
+          <li><svg><use href="#i-check"/></svg>Encrypted end to end, the same standard as video calls</li>
+          <li><svg><use href="#i-check"/></svg>PIN-protected, so only your phones can connect</li>
+          <li><svg><use href="#i-check"/></svg>No ads, no tracking, no subscription</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>Questions, answered</h2>
+      </div>
+      <div class="faq">
+        <details><summary>Is it really free?</summary><p>Yes. There's no subscription, no premium tier and no ads. It's a hobby project, made for tired parents.</p></details>
+        <details><summary>What do I need?</summary><p>Two Android phones (or a phone and a tablet) running Android 8.0 or newer. Wi-Fi Direct mode needs Android 10 or newer on both. An old phone makes a perfect baby camera; keep it plugged in overnight.</p></details>
+        <details><summary>Why isn't it on the Play Store?</summary><p>Not yet! For now you install it directly from this page, which takes about a minute.</p></details>
+        <details>
+          <summary>How do I install it?</summary>
+          <ol>
+            <li>On each phone, open this page and tap <b>Download for Android</b>.</li>
+            <li>Open the downloaded file. If Android asks, allow your browser to <b>install unknown apps</b>.</li>
+            <li>Tap <b>Install</b>. If Play Protect shows a warning about an unrecognised app, choose <b>Install anyway</b>.</li>
+          </ol>
+        </details>
+        <details><summary>Does it drain the battery?</summary><p>Streaming video uses power, so keep the baby phone on its charger overnight. The parent phone shows the baby phone's battery level, so you'll know if it's running low.</p></details>
+        <details><summary>Can I watch from a tablet?</summary><p>Yes. BabyCam has a layout for tablets and foldables, in portrait and landscape.</p></details>
+        <details><summary>Does anyone else see my video?</summary><p>No. The stream goes straight between your two phones, encrypted, and is never uploaded or recorded. Nobody, including us, can watch it.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section id="download" class="download">
+    <div class="wrap">
+      <img src="assets/icon-180.png" alt="">
+      <h2>Sweet dreams start here</h2>
+      <p class="lead" style="margin:0 auto 30px">Install BabyCam on two phones and see your little one in minutes.</p>
+      <div class="cta">
+        <a class="btn btn-primary" href="https://github.com/roshanzameer/babycam-site/releases/latest/download/babycam.apk"><svg><use href="#i-download"/></svg>Download APK</a>
+        <a class="btn btn-ghost" href="https://github.com/roshanzameer/babycam-site/releases/latest"><svg><use href="#i-github"/></svg>Release notes</a>
+      </div>
+      <p class="fine">Free · Android 8.0+ · Install the same file on both phones</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <span>© 2026 BabyCam. Made with love for sleepy parents.</span>
+      <span>No cookies. No tracking. Just a web page.</span>
+    </div>
+  </footer>
+</body>
+</html>
